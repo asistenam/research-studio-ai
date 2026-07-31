@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Studio AI — Pusat Akselerasi Penulisan Akademik</title>
+  
+  <!-- Academic & UI Typography Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Color Palette - Dark Premium */
+      --bg-app-base: #0B0F17;
+      --bg-surface-1: #131A26;
+      --bg-surface-2: #1E293B;
+      --bg-surface-glass: rgba(19, 26, 38, 0.75);
+      --bg-surface-hover: #283548;
+
+      /* Borders */
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-medium: rgba(255, 255, 255, 0.16);
+      --border-glow-ai: rgba(139, 92, 246, 0.5);
+
+      /* Accents */
+      --accent-primary: #7C3AED;
+      --accent-primary-hover: #6D28D9;
+      --accent-secondary: #2563EB;
+      --accent-ai-gradient: linear-gradient(135deg, #7C3AED 0%, #3B82F6 50%, #06B6D4 100%);
+      --accent-ai-glow: 0 0 20px rgba(124, 58, 237, 0.35);
+
+      /* Status */
+      --status-success: #10B981;
+      --status-warning: #F59E0B;
+      --status-danger: #EF4444;
+      --status-info: #3B82F6;
+
+      /* Document Canvas */
+      --doc-bg-paper: #FFFFFF;
+      --doc-bg-paper-dark: #181E2A;
+      --doc-text-primary: #0F172A;
+      --doc-text-secondary: #475569;
+      --doc-border-margin: #E2E8F0;
+
+      /* Typography */
+      --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-doc: 'Merriweather', Georgia, serif;
+      --font-mono: 'Fira Code', monospace;
+
+      /* Spacing Base-8 */
+      --space-2xs: 4px;
+      --space-xs: 8px;
+      --space-sm: 12px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      /* Radii */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      /* Shadows */
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --backdrop-blur: blur(12px) saturate(180%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-ui);
+      background-color: var(--bg-app-base);
+      color: #F8FAFC;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* App Shell & Layout Structure */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    .app-header {
+      height: 60px;
+      background-color: var(--bg-surface-1);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-lg);
+      z-index: 100;
+      contain: layout style;
+    }
+
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #F8FAFC;
+    }
+
+    .badge-ai {
+      background: var(--accent-ai-gradient);
+      color: #FFFFFF;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+    }
+
+    .app-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .app-sidebar {
+      width: 240px;
+      background-color: var(--bg-surface-1);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 90;
+      will-change: transform, width;
+    }
+
+    .app-sidebar.collapsed {
+      width: 64px;
+    }
+
+    .app-sidebar.collapsed .nav-label {
+      display: none;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-md) var(--space-xs);
+      gap: var(--space-2xs);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 10px 14px;
+      color: #94A3B8;
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .nav-item:hover {
+      background-color: var(--bg-surface-hover);
+      color: #F8FAFC;
+    }
+
+    .nav-item.active {
+      background-color: var(--bg-surface-2);
+      color: #FFFFFF;
+      border-left: 3px solid var(--accent-primary);
+    }
+
+    .main-content {
+      flex: 1;
+      height: 100%;
+      overflow-y: auto;
+      position: relative;
+      background-color: var(--bg-app-base);
+      contain: layout style;
+    }
+
+    .view-container {
+      padding: var(--space-xl);
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .workspace-split-layout {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      contain: layout;
+    }
+
+    .workspace-pane-left {
+      width: 40%;
+      min-width: 360px;
+      max-width: 520px;
+      background-color: var(--bg-surface-1);
+      border-right: 1px solid var(--border-subtle);
+      overflow-y: auto;
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      will-change: transform;
+    }
+
+    .workspace-pane-right {
+      flex: 1;
+      background-color: var(--bg-app-base);
+      overflow-y: auto;
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateZ(0);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track { background: var(--bg-app-base); }
+    ::-webkit-scrollbar-thumb { background: var(--bg-surface-2); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--bg-surface-hover); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+      padding: 8px 16px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: var(--font-ui);
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+      text-decoration: none;
+      white-space: nowrap;
+      min-height: 40px;
+      user-select: none;
+    }
+    .btn:active { transform: translateY(1px) scale(0.98); }
+    .btn-primary { background-color: var(--accent-primary); color: #FFFFFF; box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25); }
+    .btn-primary:hover { background-color: var(--accent-primary-hover); transform: translateY(-1px); }
+    .btn-secondary { background-color: var(--bg-surface-2); color: #F8FAFC; border-color: var(--border-medium); }
+    .btn-secondary:hover { background-color: var(--bg-surface-hover); color: #FFFFFF; transform: translateY(-1px); }
+    .btn-ghost { background-color: transparent; color: #94A3B8; }
+    .btn-ghost:hover { background-color: var(--bg-surface-2); color: #F8FAFC; }
+    .btn-ai { background: var(--accent-ai-gradient); color: #FFFFFF; box-shadow: var(--accent-ai-glow); }
+    .btn-ai:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124, 58, 237, 0.55); }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; min-height: 36px; }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: #94A3B8;
+      padding: 8px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      min-width: 40px;
+      min-height: 40px;
+    }
+    .icon-btn:hover { background-color: var(--bg-surface-2); color: #F8FAFC; }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .module-card {
+      background-color: var(--bg-surface-1);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .module-card:hover {
+      border-color: var(--border-glow-ai);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md), 0 0 16px rgba(124, 58, 237, 0.15);
+    }
+    .module-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm); }
+    .module-card-icon { font-size: 1.8rem; }
+    .module-card-title { font-size: 1.1rem; font-weight: 700; color: #F8FAFC; margin-bottom: var(--space-2xs); }
+    .module-card-desc { font-size: 0.85rem; color: #94A3B8; line-height: 1.5; }
+
+    /* Forms */
+    .form-group { display: flex; flex-direction: column; gap: var(--space-xs); margin-bottom: var(--space-md); }
+    .form-label { font-size: 0.85rem; font-weight: 600; color: #E2E8F0; display: flex; justify-content: space-between; }
+    .form-label .required { color: var(--status-danger); }
+    .form-control, .form-select {
+      background-color: var(--bg-surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      color: #F8FAFC;
+      font-family: var(--font-ui);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s ease;
+      width: 100%;
+      min-height: 44px;
+    }
+    .form-control:focus, .form-select:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25); }
+    textarea.form-control { min-height: 110px; resize: vertical; line-height: 1.6; }
+
+    .workspace-canvas-toolbar {
+      width: 100%;
+      max-width: 820px;
+      background-color: var(--bg-surface-1);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .canvas-toolbar-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .canvas-metric-item { font-size: 0.8rem; color: #94A3B8; display: flex; align-items: center; gap: 4px; }
+    .canvas-metric-divider { width: 1px; height: 14px; background-color: var(--border-subtle); }
+
+    .doc-paper {
+      width: 100%;
+      max-width: 820px;
+      min-height: 1050px;
+      background-color: var(--doc-bg-paper);
+      color: var(--doc-text-primary);
+      font-family: var(--font-doc);
+      padding: 64px 72px;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg);
+      box-sizing: border-box;
+      line-height: 1.85;
+      transition: all 0.25s ease;
+      outline: none;
+      position: relative;
+      transform-origin: top center;
+    }
+    .doc-paper.theme-paper-light { background-color: #FFFFFF; color: #0F172A; }
+    .doc-paper.theme-paper-dark { background-color: #181E2A; color: #E2E8F0; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7); }
+    .doc-paper.theme-paper-dark h1, .doc-paper.theme-paper-dark h2, .doc-paper.theme-paper-dark h3 { color: #F8FAFC; }
+    .doc-paper h1 { font-size: 1.8rem; font-weight: 700; text-align: center; margin-bottom: 1.5rem; line-height: 1.3; }
+    .doc-paper h2 { font-size: 1.3rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.8rem; border-bottom: 1px solid var(--doc-border-margin); padding-bottom: 4px; }
+    .doc-paper h3 { font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    .doc-paper p { margin-bottom: 1.25rem; text-align: justify; text-indent: 2rem; }
+    .doc-paper ul, .doc-paper ol { margin-bottom: 1.25rem; padding-left: 2.5rem; }
+    .doc-paper-callout { background-color: #F1F5F9; border-left: 4px solid var(--accent-primary); padding: 16px; margin: 1.5rem 0; border-radius: 0 var(--radius-md) var(--radius-md) 0; font-size: 0.95rem; }
+    .doc-paper-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+    .doc-paper-table th, .doc-paper-table td { border: 1px solid #CBD5E1; padding: 8px 12px; text-align: left; }
+    .doc-paper-table th { background-color: #F1F5F9; font-weight: 700; }
+
+    /* Dropdown Menu */
+    .dropdown-wrapper { position: relative; display: inline-block; }
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 6px;
+      background-color: var(--bg-surface-1);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      min-width: 180px;
+      z-index: 500;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      backdrop-filter: var(--backdrop-blur);
+    }
+    .dropdown-wrapper.active .dropdown-menu { display: flex; animation: fadeIn 0.18s ease forwards; }
+    .dropdown-item {
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      color: #E2E8F0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+      transition: background-color 0.15s ease;
+    }
+    .dropdown-item:hover { background-color: var(--bg-surface-hover); color: #FFFFFF; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 500;
+      border: 1px solid var(--border-subtle);
+    }
+    .status-pill .dot { width: 6px; height: 6px; border-radius: 50%; background-color: currentColor; }
+    .status-warning { background-color: rgba(245, 158, 11, 0.1); color: var(--status-warning); border-color: rgba(245, 158, 11, 0.25); }
+    .status-success { background-color: rgba(16, 185, 129, 0.1); color: var(--status-success); border-color: rgba(16, 185, 129, 0.25); }
+    .status-danger { background-color: rgba(239, 68, 68, 0.1); color: var(--status-danger); border-color: rgba(239, 68, 68, 0.25); }
+
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .toast {
+      background-color: var(--bg-surface-glass);
+      backdrop-filter: var(--backdrop-blur);
+      border: 1px solid var(--border-medium);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      color: #F8FAFC;
+      font-size: 0.875rem;
+      box-shadow: var(--shadow-lg);
+      pointer-events: auto;
+      animation: slideInRight 0.25s ease forwards;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .toast-success { border-left: 4px solid var(--status-success); }
+    .toast-warning { border-left: 4px solid var(--status-warning); }
+    .toast-danger { border-left: 4px solid var(--status-danger); }
+    .toast-info { border-left: 4px solid var(--accent-secondary); }
+
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: rgba(11, 15, 23, 0.82);
+      backdrop-filter: var(--backdrop-blur);
+      z-index: 999; display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.22s ease;
+    }
+    .modal-backdrop.active { opacity: 1; pointer-events: auto; }
+    .modal-dialog {
+      background-color: var(--bg-surface-1);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-lg);
+      width: 90%; max-width: 560px; box-shadow: var(--shadow-lg);
+      display: flex; flex-direction: column; overflow: hidden;
+      transform: scale(0.95); transition: transform 0.22s ease;
+    }
+    .modal-backdrop.active .modal-dialog { transform: scale(1); }
+    .modal-header { padding: var(--space-md) var(--space-lg); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font-size: 1.15rem; font-weight: 700; color: #F8FAFC; }
+    .modal-body { padding: var(--space-lg); max-height: 70vh; overflow-y: auto; }
+    .modal-footer { padding: var(--space-md) var(--space-lg); border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end; gap: var(--space-sm); background-color: rgba(0, 0, 0, 0.2); }
+
+    /* Stepper Component */
+    .stepper-container { display: flex; justify-content: space-between; align-items: center; position: relative; margin-bottom: var(--space-lg); }
+    .stepper-container::before { content: ''; position: absolute; top: 18px; left: 10%; right: 10%; height: 2px; background-color: var(--border-subtle); z-index: 1; }
+    .stepper-step { display: flex; flex-direction: column; align-items: center; gap: var(--space-xs); z-index: 2; background-color: var(--bg-surface-1); padding: 0 8px; }
+    .step-number { width: 36px; height: 36px; border-radius: 50%; background-color: var(--bg-surface-2); border: 2px solid var(--border-medium); color: #94A3B8; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
+    .stepper-step.active .step-number { background-color: var(--accent-primary); border-color: var(--accent-primary); color: #FFFFFF; box-shadow: 0 0 14px rgba(124, 58, 237, 0.55); }
+    .stepper-step.completed .step-number { background-color: var(--status-success); border-color: var(--status-success); color: #FFFFFF; }
+
+    .skeleton { background: linear-gradient(90deg, var(--bg-surface-2) 0%, var(--bg-surface-hover) 50%, var(--bg-surface-2) 100%); background-size: 200px 100%; animation: skeletonWave 1.6s infinite ease-in-out; border-radius: var(--radius-sm); }
+
+    /* Keyframe Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes skeletonWave { 0% { background-position: -200px 0; } 100% { background-position: calc(200px + 100%) 0; } }
+
+    /* Responsive Mobile Adjustments */
+    .mobile-ws-tabs { display: none; }
+    @media (max-width: 768px) {
+      .app-sidebar { position: fixed; top: 60px; left: -240px; height: calc(100vh - 60px); }
+      .app-sidebar.mobile-open { transform: translateX(240px); }
+      .workspace-split-layout { flex-direction: column; }
+      .mobile-ws-tabs { display: flex; background: var(--bg-surface-1); border-bottom: 1px solid var(--border-subtle); }
+      .mobile-ws-tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: #94A3B8; font-weight: 600; cursor: pointer; }
+      .mobile-ws-tab-btn.active { color: #FFFFFF; border-bottom: 2px solid var(--accent-primary); background: var(--bg-surface-2); }
+      .workspace-split-layout.show-tab-left .workspace-pane-right { display: none; }
+      .workspace-split-layout.show-tab-left .workspace-pane-left { width: 100%; max-width: none; }
+      .workspace-split-layout.show-tab-right .workspace-pane-left { display: none; }
+      .workspace-split-layout.show-tab-right .workspace-pane-right { width: 100%; }
+      .doc-paper { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body class="theme-dark">
+
+  <div id="app-shell" class="app-shell">
+    <!-- App Header -->
+    <header id="app-header" class="app-header">
+      <div class="header-left">
+        <button id="sidebar-toggle-btn" class="icon-btn" title="Toggle Navigasi">
+          <span class="icon">☰</span>
+        </button>
+        <div class="brand-logo">
+          <span class="logo-icon">🔬</span>
+          <span class="logo-text">Research Studio <span class="badge-ai">AI</span></span>
+        </div>
+      </div>
+      
+      <div class="header-center">
+        <div id="active-project-indicator" class="active-project-pill hidden">
+          <span class="project-icon">📄</span>
+          <span id="active-project-title-text" class="project-title-text">Draft Tanpa Judul</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div id="api-status-badge" class="status-pill status-warning">
+          <span class="dot"></span>
+          <span id="api-status-text">API Key Belum Set</span>
+        </div>
+        <button id="btn-open-settings" class="btn btn-secondary btn-sm">
+          <span>⚙️ Pengaturan</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- App Body -->
+    <div class="app-body">
+      <!-- Sidebar -->
+      <aside id="app-sidebar" class="app-sidebar">
+        <nav class="sidebar-nav">
+          <a href="#/home" class="nav-item active" data-view="home">
+            <span class="nav-icon">🚀</span>
+            <span class="nav-label">Studio Home</span>
+          </a>
+          <a href="#/wizard" class="nav-item" data-view="wizard">
+            <span class="nav-icon">📝</span>
+            <span class="nav-label">Wizard Baru</span>
+          </a>
+          <a href="#/projects" class="nav-item" data-view="projects">
+            <span class="nav-icon">📁</span>
+            <span class="nav-label">Proyek Saya</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Dynamic Content Container -->
+      <main id="main-content" class="main-content">
+        <!-- Views rendered dynamically by SPA Router -->
+      </main>
+    </div>
+  </div>
+
+  <!-- Global Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script type="module">
+    /**
+     * RESEARCH STUDIO AI - SINGLE FILE CONSOLIDATED ENGINE
+     */
+
+    // 1. CONFIG & REGISTRY
+    const APP_CONFIG = {
+      name: 'Research Studio AI',
+      version: '1.0.0',
+      geminiDefaultModel: 'gemini-2.5-flash',
+      geminiFallbackModel: 'gemini-2.0-flash',
+      autoSaveIntervalMs: 15000,
+      maxHistoryLogs: 20,
+    };
+
+    const STORAGE_KEYS = {
+      SETTINGS: 'rsa_settings',
+      PROJECTS_INDEX: 'rsa_projects_index',
+      PROJECT_PREFIX: 'rsa_proj_',
+      HISTORY_LOGS: 'rsa_history_logs',
+    };
+
+    const DEFAULT_SETTINGS = {
+      apiKey: '',
+      selectedModel: APP_CONFIG.geminiDefaultModel,
+      theme: 'dark',
+      autoSaveEnabled: true,
+    };
+
+    const ACADEMIC_MODULES = {
+      PROPOSAL: { key: 'PROPOSAL', title: 'Proposal Penelitian', icon: '📄', category: 'Dokumen Utuh', description: 'Bab 1-3 proposal riset komprehensif lengkap dengan metodologi.', badge: 'Populer' },
+      SKRIPSI: { key: 'SKRIPSI', title: 'Skripsi / Tesis / Disertasi', icon: '📚', category: 'Dokumen Utuh', description: 'Draf karya akhir akademik tingkat S1, S2, dan S3 terstruktur.', badge: 'Komprehensif' },
+      ARTIKEL_JURNAL: { key: 'ARTIKEL_JURNAL', title: 'Artikel Ilmiah & Jurnal', icon: '📖', category: 'Dokumen Utuh', description: 'Format standar IMRAD untuk publikasi Scopus / Sinta.', badge: 'Publikasi' },
+      LITERATUR_REVIEW: { key: 'LITERATUR_REVIEW', title: 'Literatur Review', icon: '📚', category: 'Dokumen Utuh', description: 'Sintesis pustaka, peta teori, dan identifikasi penelitian terdahulu.', badge: 'Riset' },
+      BAB_1_PENDAHULUAN: { key: 'BAB_1_PENDAHULUAN', title: 'BAB I Pendahuluan', icon: '📑', category: 'Bab Spesifik', description: 'Latar belakang masalah, rumusan, tujuan, dan signifikansi riset.', badge: 'Bab 1' },
+      BAB_2_PUSTAKA: { key: 'BAB_2_PUSTAKA', title: 'BAB II Kajian Pustaka', icon: '📑', category: 'Bab Spesifik', description: 'Landasan teori, kerangka berpikir, dan perumusan hipotesis.', badge: 'Bab 2' },
+      BAB_3_METODE: { key: 'BAB_3_METODE', title: 'BAB III Metodologi', icon: '📑', category: 'Bab Spesifik', description: 'Desain penelitian, populasi/sampel, instrumen, dan analisis data.', badge: 'Bab 3' },
+      INSTRUMEN_KUESIONER: { key: 'INSTRUMEN_KUESIONER', title: 'Instrumen Kuesioner', icon: '📋', category: 'Metode & Instrumen', description: 'Penyusunan indikator dan butir pertanyaan skala Likert.', badge: 'Instrumen' },
+      ANALISIS_DATA: { key: 'ANALISIS_DATA', title: 'Analisis Data & Statistik', icon: '📊', category: 'Metode & Instrumen', description: 'Narasi interpretasi hasil olah data SPSS, SmartPLS, atau R.', badge: 'Statistik' },
+      SITASI_BIBLIO: { key: 'SITASI_BIBLIO', title: 'Generator Sitasi & Bibliografi', icon: '📚', category: 'Sitasi', description: 'Format referensi otomatis standar APA 7th, IEEE, Chicago, Turabian.', badge: 'Sitasi' },
+      SLIDE_PRESENTASI: { key: 'SLIDE_PRESENTASI', title: 'Presentasi Sidang', icon: '🎤', category: 'Dokumen Utuh', description: 'Outline slide presentasi sidang skripsi/tesis beserta naskah narasi.', badge: 'Sidang' }
+    };
+
+    const SYSTEM_PERSONA_PROMPT = `Anda adalah seorang Guru Besar dan Profesor Riset Senior dengan kepakaran tinggi dalam metodologi penelitian ilmiah tingkat global. Tugas Anda adalah menyusun dokumen akademik yang memenuhi standar publikasi internasional, terstruktur, rinci, kaya akan rujukan metodologis, logis, serta bebas dari plagiarisme atau kalimat umum yang berbelit-belit (fluff).`;
+
+    function buildAcademicPrompt(moduleKey, formData = {}) {
+      let metadataText = '';
+      for (const [key, value] of Object.entries(formData)) {
+        if (value && key !== 'moduleKey') {
+          metadataText += `- ${key.toUpperCase()}: ${value}\n`;
+        }
+      }
+
+      let moduleInst = `Buatkan draf komprehensif akademik berdasarkan topik "${formData.judul || formData.topik || 'Penelitian Ilmiah'}" terstruktur rapi.`;
+      if (moduleKey === 'PROPOSAL' || moduleKey === 'SKRIPSI') {
+        moduleInst = `Buatkan draf komprehensif untuk proposal/karya ilmiah berjudul "${formData.judul || 'Penelitian Ilmiah'}":\nBAB I PENDAHULUAN (Latar Belakang, Rumusan, Tujuan, Manfaat)\nBAB II KAJIAN PUSTAKA (Landasan Teori, Penelitian Terdahulu, Kerangka Berpikir)\nBAB III METODOLOGI PENELITIAN (Desain, Subjek, Instrumen, Analisis Data).`;
+      } else if (moduleKey === 'ARTIKEL_JURNAL') {
+        moduleInst = `Susunlah draf artikel ilmiah IMRAD berdasarkan topik "${formData.judul || 'Artikel Ilmiah'}": Judul, Abstrak & Keywords, Pendahuluan, Metode, Hasil & Pembahasan, Kesimpulan & Implikasi.`;
+      } else if (moduleKey === 'INSTRUMEN_KUESIONER') {
+        moduleInst = `Buatkan draf instrumen kuesioner Skala Likert 5 Poin untuk variabel "${formData.variabel || 'Variabel Riset'}": Pengantar, Kisi-kisi Matriks, dan 15 Butir Pernyataan.`;
+      }
+
+      return `${SYSTEM_PERSONA_PROMPT}\n\nMETADATA PENELITIAN:\n${metadataText}\n\nINSTRUKSI PENULISAN:\n${moduleInst}\n\nATURAN FORMATTING:\n1. Gunakan Bahasa Indonesia Akademik Baku.\n2. Formatkan dengan Markdown terstruktur (# H1, ## H2, ### H3, tabel, bullet points).\n3. Dilarang basa-basi. Langsung mulai dokumen ilmiah utama.`;
+    }
+
+    class GeminiService {
+      static getApiKey() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+          if (raw) return (JSON.parse(raw).apiKey || '').trim();
+        } catch (e) {}
+        return '';
+      }
+
+      static getSelectedModel() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+          if (raw) return JSON.parse(raw).selectedModel || APP_CONFIG.geminiDefaultModel;
+        } catch (e) {}
+        return APP_CONFIG.geminiDefaultModel;
+      }
+
+      static async testApiKey(apiKey) {
+        if (!navigator.onLine) return { success: false, message: 'Perangkat Anda sedang offline.' };
+        if (!apiKey) return { success: false, message: 'API Key tidak boleh kosong.' };
+
+        const modelsToTest = [APP_CONFIG.geminiDefaultModel, APP_CONFIG.geminiFallbackModel, 'gemini-1.5-flash'];
+        let lastError = '';
+
+        for (const model of modelsToTest) {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey.trim()}`;
+          try {
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ contents: [{ parts: [{ text: 'Ping test' }] }] })
+            });
+            if (res.ok) return { success: true, message: `Koneksi Gemini API Berhasil! (Model: ${model})` };
+            const err = await res.json().catch(() => ({}));
+            lastError = `Gagal (${res.status}): ${err.error?.message || 'Error HTTP'}`;
+          } catch (e) {
+            lastError = `Kesalahan Jaringan: ${e.message}`;
+          }
+        }
+        return { success: false, message: lastError };
+      }
+
+      static async generateStream(prompt, onChunk, options = {}) {
+        if (!navigator.onLine) throw new Error('OFFLINE: Sambungkan internet untuk menghasilkan dokumen.');
+        const apiKey = options.apiKey || this.getApiKey();
+        if (!apiKey) throw new Error('API_KEY_MISSING: Silakan masukkan Gemini API Key di menu Pengaturan.');
+
+        let model = options.model || this.getSelectedModel();
+
+        const attemptStream = async (targetModel) => {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:streamGenerateContent?alt=sse&key=${apiKey}`;
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 45000);
+
+          try {
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              signal: controller.signal,
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.3, maxOutputTokens: 8192 }
+              })
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+              const errData = await response.json().catch(() => ({}));
+              const status = response.status;
+              const msg = errData.error?.message || 'Gagal terhubung ke Gemini';
+
+              if (status === 404) {
+                throw new Error(`MODEL_NOT_FOUND (404): Model '${targetModel}' tidak ditemukan. Coba ganti model ke 'gemini-2.5-flash' di Pengaturan.`);
+              }
+
+              throw new Error(`API_ERROR (${status}): ${msg}`);
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let fullText = '', buffer = '';
+
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split('\n');
+              buffer = lines.pop() || '';
+
+              for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('data:')) {
+                  const jsonStr = trimmed.replace(/^data:\s*/, '');
+                  if (jsonStr === '[DONE]') continue;
+                  try {
+                    const parsed = JSON.parse(jsonStr);
+                    const chunk = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                    if (chunk) {
+                      fullText += chunk;
+                      if (onChunk) onChunk(chunk, fullText);
+                    }
+                  } catch (e) {}
+                }
+              }
+            }
+            return fullText;
+          } catch (err) {
+            clearTimeout(timeoutId);
+            throw err;
+          }
+        };
+
+        try {
+          return await attemptStream(model);
+        } catch (err) {
+          // Automatic fallback if initial model returned 404
+          if (err.message && err.message.includes('MODEL_NOT_FOUND') && model !== APP_CONFIG.geminiFallbackModel) {
+            console.warn(`[GeminiService] Model ${model} return 404. Fallback to ${APP_CONFIG.geminiFallbackModel}`);
+            return await attemptStream(APP_CONFIG.geminiFallbackModel);
+          }
+          throw err;
+        }
+      }
+    }
+
+    class StorageEngine {
+      static _indexCache = null;
+
+      static getSettings() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+          if (raw) return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+        } catch (e) {}
+        return { ...DEFAULT_SETTINGS };
+      }
+
+      static saveSettings(settings) {
+        try {
+          const updated = { ...this.getSettings(), ...settings };
+          localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
+          return true;
+        } catch (e) { return false; }
+      }
+
+      static getAllProjectsMeta() {
+        if (this._indexCache) return this._indexCache;
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.PROJECTS_INDEX);
+          if (raw) {
+            this._indexCache = JSON.parse(raw);
+            return this._indexCache;
+          }
+        } catch (e) {}
+        this._indexCache = [];
+        return this._indexCache;
+      }
+
+      static getProjectById(id) {
+        try {
+          const raw = localStorage.getItem(`${STORAGE_KEYS.PROJECT_PREFIX}${id}`);
+          if (raw) return JSON.parse(raw);
+        } catch (e) {}
+        return null;
+      }
+
+      static saveProject(proj) {
+        try {
+          const id = proj.id || `proj_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+          const now = new Date().toISOString();
+          const state = {
+            id,
+            title: proj.title || proj.judul || 'Draf Riset Tanpa Judul',
+            moduleKey: proj.moduleKey || 'PROPOSAL',
+            createdAt: proj.createdAt || now,
+            updatedAt: now,
+            isFavorite: proj.isFavorite || false,
+            formData: proj.formData || {},
+            content: proj.content || '',
+            wordCount: proj.wordCount || 0
+          };
+
+          localStorage.setItem(`${STORAGE_KEYS.PROJECT_PREFIX}${id}`, JSON.stringify(state));
+          
+          let metaList = this.getAllProjectsMeta();
+          const idx = metaList.findIndex(p => p.id === id);
+          const metaItem = { id, title: state.title, moduleKey: state.moduleKey, updatedAt: state.updatedAt, isFavorite: state.isFavorite, wordCount: state.wordCount };
+
+          if (idx >= 0) metaList[idx] = metaItem;
+          else metaList.unshift(metaItem);
+
+          localStorage.setItem(STORAGE_KEYS.PROJECTS_INDEX, JSON.stringify(metaList));
+          this._indexCache = metaList;
+          return state;
+        } catch (e) { return null; }
+      }
+
+      static deleteProject(id) {
+        try {
+          localStorage.removeItem(`${STORAGE_KEYS.PROJECT_PREFIX}${id}`);
+          const metaList = this.getAllProjectsMeta().filter(p => p.id !== id);
+          localStorage.setItem(STORAGE_KEYS.PROJECTS_INDEX, JSON.stringify(metaList));
+          this._indexCache = metaList;
+          return true;
+        } catch (e) { return false; }
+      }
+
+      static duplicateProject(id) {
+        const orig = this.getProjectById(id);
+        if (!orig) return null;
+        return this.saveProject({
+          title: `${orig.title} (Salinan)`,
+          moduleKey: orig.moduleKey,
+          formData: { ...orig.formData, judul: `${orig.title} (Salinan)` },
+          content: orig.content,
+          wordCount: orig.wordCount
+        });
+      }
+
+      static toggleFavorite(id) {
+        const proj = this.getProjectById(id);
+        if (!proj) return false;
+        proj.isFavorite = !proj.isFavorite;
+        this.saveProject(proj);
+        return proj.isFavorite;
+      }
+
+      static searchProjects(query = '', moduleFilter = 'ALL', sortBy = 'newest') {
+        let list = this.getAllProjectsMeta();
+        if (query.trim()) {
+          const q = query.toLowerCase().trim();
+          list = list.filter(p => p.title.toLowerCase().includes(q) || p.moduleKey.toLowerCase().includes(q));
+        }
+        if (moduleFilter !== 'ALL') list = list.filter(p => p.moduleKey === moduleFilter);
+
+        list.sort((a, b) => {
+          if (sortBy === 'favorite') return (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0);
+          if (sortBy === 'oldest') return new Date(a.updatedAt) - new Date(b.updatedAt);
+          if (sortBy === 'title') return a.title.localeCompare(b.title);
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
+        });
+        return list;
+      }
+
+      static exportBackupJSON() {
+        const data = { app: 'Research Studio AI', exportedAt: new Date().toISOString(), settings: this.getSettings(), projectsIndex: this.getAllProjectsMeta(), projects: {} };
+        data.projectsIndex.forEach(item => { data.projects[item.id] = this.getProjectById(item.id); });
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `RSAI_Backup_${new Date().toISOString().slice(0,10)}.json`;
+        a.click(); URL.revokeObjectURL(url);
+      }
+
+      static importBackupJSON(jsonText) {
+        try {
+          const parsed = JSON.parse(jsonText);
+          if (!parsed.projectsIndex || !parsed.projects) return false;
+          if (parsed.settings) this.saveSettings(parsed.settings);
+          localStorage.setItem(STORAGE_KEYS.PROJECTS_INDEX, JSON.stringify(parsed.projectsIndex));
+          for (const id in parsed.projects) {
+            localStorage.setItem(`${STORAGE_KEYS.PROJECT_PREFIX}${id}`, JSON.stringify(parsed.projects[id]));
+          }
+          this._indexCache = null;
+          return true;
+        } catch (e) { return false; }
+      }
+    }
+
+    class ExportEngine {
+      static exportToMarkdown(text, filename = 'Dokumen_Riset') {
+        const blob = new Blob([text], { type: 'text/markdown;charset=utf-8;' });
+        this.download(blob, `${filename.replace(/\s+/g, '_')}.md`);
+      }
+
+      static exportToDocx(htmlContent, filename = 'Dokumen_Riset') {
+        const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><style>body{font-family:'Merriweather',serif;font-size:12pt;line-height:1.8;}h1{text-align:center;}p{text-indent:2em;text-align:justify;}</style></head><body>${htmlContent}</body></html>`;
+        const blob = new Blob(['\ufeff' + header], { type: 'application/msword' });
+        this.download(blob, `${filename.replace(/\s+/g, '_')}.docx`);
+      }
+
+      static exportToPdfOrPrint() { window.print(); }
+
+      static async copyToClipboard(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (e) { return false; }
+      }
+
+      static download(blob, name) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = name; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 150);
+      }
+    }
+
+    class WizardEngine {
+      constructor(moduleKey, containerEl, options = {}) {
+        this.moduleKey = moduleKey || 'PROPOSAL';
+        this.containerEl = containerEl;
+        this.onComplete = options.onComplete || null;
+        this.currentStep = 0;
+        this.formData = {};
+        this.schema = [
+          { title: 'Informasi Umum', fields: [{ id: 'judul', label: 'Judul Penelitian / Topik Utama', type: 'textarea', required: true, placeholder: 'Masukkan judul lengkap penelitian...' }, { id: 'jenjang', label: 'Jenjang Pendidikan', type: 'select', options: ['S1 - Sarjana', 'S2 - Magister', 'S3 - Doktor'] }] },
+          { title: 'Metodologi', fields: [{ id: 'metode', label: 'Metode Penelitian', type: 'select', options: ['Kuantitatif', 'Kualitatif', 'Mixed Methods', 'R&D'] }, { id: 'pendekatan', label: 'Pendekatan Spesifik', type: 'text', placeholder: 'contoh: Eksperimen Semu, Studi Kasus, Fenomenologi' }] },
+          { title: 'Detail Output', fields: [{ id: 'rumusanMasalah', label: 'Rumusan Masalah Utama', type: 'textarea', placeholder: '1. Bagaimana peningkatan efisiensi...' }] }
+        ];
+        this.render();
+      }
+
+      render() {
+        if (!this.containerEl) return;
+        const step = this.schema[this.currentStep];
+        let stepsHtml = this.schema.map((s, i) => `
+          <div class="stepper-step ${i === this.currentStep ? 'active' : (i < this.currentStep ? 'completed' : '')}">
+            <div class="step-number">${i < this.currentStep ? '✓' : i + 1}</div>
+            <span style="font-size: 0.8rem; color: #94A3B8;">${s.title}</span>
+          </div>`).join('');
+
+        let fieldsHtml = step.fields.map(f => {
+          const val = this.formData[f.id] || '';
+          let input = f.type === 'textarea' ? `<textarea id="field-${f.id}" class="form-control">${val}</textarea>` :
+            (f.type === 'select' ? `<select id="field-${f.id}" class="form-select">${f.options.map(o => `<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('')}</select>` : `<input type="text" id="field-${f.id}" class="form-control" value="${val}">`);
+          return `<div class="form-group"><label class="form-label">${f.label} ${f.required?'<span class="required">*</span>':''}</label>${input}<div id="err-${f.id}" style="color:var(--status-danger);font-size:0.8rem;display:none;">Wajib diisi.</div></div>`;
+        }).join('');
+
+        this.containerEl.innerHTML = `
+          <div class="stepper-container">${stepsHtml}</div>
+          <div style="margin-top:20px;">
+            <h3 style="margin-bottom:16px;">Langkah ${this.currentStep+1}: ${step.title}</h3>
+            <form onsubmit="return false;">${fieldsHtml}</form>
+            <div style="display:flex;justify-content:space-between;margin-top:24px;">
+              ${this.currentStep > 0 ? `<button id="btn-wiz-prev" class="btn btn-secondary">← Kembali</button>` : '<div></div>'}
+              ${this.currentStep < this.schema.length - 1 ? `<button id="btn-wiz-next" class="btn btn-primary">Lanjut →</button>` : `<button id="btn-wiz-submit" class="btn btn-ai">✨ Hasilkan Dokumen (AI)</button>`}
+            </div>
+          </div>
+        `;
+
+        this.bind();
+      }
+
+      bind() {
+        const prev = this.containerEl.querySelector('#btn-wiz-prev');
+        const next = this.containerEl.querySelector('#btn-wiz-next');
+        const sub = this.containerEl.querySelector('#btn-wiz-submit');
+
+        if (prev) prev.addEventListener('click', () => { this.save(); this.currentStep--; this.render(); });
+        if (next) next.addEventListener('click', () => { if (this.validate()) { this.save(); this.currentStep++; this.render(); } });
+        if (sub) sub.addEventListener('click', () => { if (this.validate()) { this.save(); if (this.onComplete) this.onComplete({ moduleKey: this.moduleKey, ...this.formData }); } });
+      }
+
+      save() {
+        this.schema[this.currentStep].fields.forEach(f => {
+          const el = this.containerEl.querySelector(`#field-${f.id}`);
+          if (el) this.formData[f.id] = el.value;
+        });
+      }
+
+      validate() {
+        let valid = true;
+        this.schema[this.currentStep].fields.forEach(f => {
+          if (f.required) {
+            const el = this.containerEl.querySelector(`#field-${f.id}`);
+            const err = this.containerEl.querySelector(`#err-${f.id}`);
+            if (el && !el.value.trim()) { valid = false; if (err) err.style.display = 'block'; }
+            else if (err) err.style.display = 'none';
+          }
+        });
+        return valid;
+      }
+    }
+
+    class UIManager {
+      constructor() {
+        this.main = document.getElementById('main-content');
+        this.toastHost = document.getElementById('toast-container');
+        this.modalBackdrop = null;
+        this.rawMarkdownCache = '';
+        this.initModal();
+      }
+
+      initModal() {
+        let bd = document.getElementById('global-modal-backdrop');
+        if (!bd) {
+          bd = document.createElement('div');
+          bd.id = 'global-modal-backdrop';
+          bd.className = 'modal-backdrop';
+          bd.innerHTML = `<div class="modal-dialog"><div class="modal-header"><h3 id="modal-title" class="modal-title">Modal</h3><button id="modal-close" class="icon-btn">✕</button></div><div id="modal-body" class="modal-body"></div><div id="modal-footer" class="modal-footer"></div></div>`;
+          document.body.appendChild(bd);
+          bd.querySelector('#modal-close').onclick = () => this.closeModal();
+        }
+        this.modalBackdrop = bd;
+      }
+
+      closeModal() { if (this.modalBackdrop) this.modalBackdrop.classList.remove('active'); }
+
+      showModal({ title, bodyHtml, footerButtons = [] }) {
+        this.modalBackdrop.querySelector('#modal-title').textContent = title;
+        this.modalBackdrop.querySelector('#modal-body').innerHTML = bodyHtml;
+        const ft = this.modalBackdrop.querySelector('#modal-footer');
+        ft.innerHTML = '';
+        footerButtons.forEach(b => {
+          const btn = document.createElement('button');
+          btn.className = `btn btn-${b.variant || 'primary'}`;
+          btn.textContent = b.label;
+          if (b.onClick) btn.onclick = b.onClick;
+          ft.appendChild(btn);
+        });
+        this.modalBackdrop.classList.add('active');
+      }
+
+      showToast(msg, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<span>${type==='success'?'✅':(type==='danger'?'🚨':'ℹ️')}</span><span>${msg}</span>`;
+        this.toastHost.appendChild(toast);
+        setTimeout(() => { toast.remove(); }, 3000);
+      }
+
+      renderHomeView(onSelectModule) {
+        let grid = '';
+        for (const k in ACADEMIC_MODULES) {
+          const mod = ACADEMIC_MODULES[k];
+          grid += `<div class="module-card" data-mod="${mod.key}">
+            <div class="module-card-header"><span class="module-card-icon">${mod.icon}</span><span class="status-pill status-warning">${mod.badge}</span></div>
+            <div class="module-card-title">${mod.title}</div>
+            <div class="module-card-desc">${mod.description}</div>
+            <button class="btn btn-secondary btn-sm" style="width:100%;margin-top:12px;">Mulai Wizard →</button>
+          </div>`;
+        }
+        this.main.innerHTML = `<div class="view-container animate-fade-in"><h1 style="font-size:1.8rem;margin-bottom:8px;">Pusat Penulisan Akademik AI</h1><p style="color:#94A3B8;margin-bottom:24px;">Pilih modul AI akademik terpadu untuk memulai draf ilmiah.</p><div class="module-grid">${grid}</div></div>`;
+
+        this.main.querySelectorAll('.module-card').forEach(c => {
+          c.onclick = () => onSelectModule(c.getAttribute('data-mod'));
+        });
+      }
+
+      renderWizardView(moduleKey, onComplete) {
+        const mod = ACADEMIC_MODULES[moduleKey] || ACADEMIC_MODULES.PROPOSAL;
+        this.main.innerHTML = `<div class="view-container animate-fade-in">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h2>Wizard: ${mod.title}</h2>
+            <a href="#/home" class="btn btn-secondary btn-sm">← Batal</a>
+          </div>
+          <div style="background:var(--bg-surface-1);padding:24px;border-radius:var(--radius-lg);border:1px solid var(--border-subtle);" id="wizard-host"></div>
+        </div>`;
+        new WizardEngine(moduleKey, document.getElementById('wizard-host'), { onComplete });
+      }
+
+      renderProjectsView(callbacks) {
+        this.main.innerHTML = `<div class="view-container animate-fade-in">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h1>Proyek & Draf Tersimpan</h1>
+            <a href="#/home" class="btn btn-ai">+ Proyek Baru</a>
+          </div>
+          <div style="background:var(--bg-surface-1);padding:16px;border-radius:var(--radius-md);margin-bottom:20px;display:flex;gap:12px;">
+            <input type="text" id="p-search" class="form-control" placeholder="🔍 Cari draf proyek..." />
+          </div>
+          <div id="p-grid" class="module-grid"></div>
+        </div>`;
+
+        const update = () => {
+          const query = document.getElementById('p-search')?.value || '';
+          const list = StorageEngine.searchProjects(query);
+          const grid = document.getElementById('p-grid');
+          if (!list.length) { grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:40px;color:#94A3B8;">Belum ada proyek tersimpan.</p>`; return; }
+          grid.innerHTML = list.map(p => `
+            <div class="module-card">
+              <div class="module-card-header"><span>📄 ${p.moduleKey}</span><button class="icon-btn" onclick="window.appToggleFav('${p.id}')">${p.isFavorite?'⭐':'☆'}</button></div>
+              <div class="module-card-title">${p.title}</div>
+              <div style="font-size:0.8rem;color:#94A3B8;margin-top:8px;">${p.wordCount||0} kata</div>
+              <div style="display:flex;gap:8px;margin-top:16px;">
+                <button class="btn btn-primary btn-sm" onclick="window.appOpenProj('${p.id}')">Buka</button>
+                <button class="btn btn-secondary btn-sm" onclick="window.appDelProj('${p.id}')">Hapus</button>
+              </div>
+            </div>`).join('');
+        };
+
+        document.getElementById('p-search').oninput = update;
+        update();
+      }
+
+      renderWorkspaceView(formData, onRegenerate) {
+        this.main.innerHTML = `<div class="workspace-split-layout show-tab-left" id="ws-layout">
+          <div class="mobile-ws-tabs">
+            <button id="tb-left" class="mobile-ws-tab-btn active" onclick="window.appWsTab('left')">📝 Form</button>
+            <button id="tb-right" class="mobile-ws-tab-btn" onclick="window.appWsTab('right')">📄 Live Canvas</button>
+          </div>
+          <div class="workspace-pane-left">
+            <h3>Control Panel</h3>
+            <hr style="border-color:var(--border-subtle);margin:12px 0;" />
+            <div class="form-group"><label class="form-label">Judul Dokumen</label><input type="text" class="form-control" value="${formData?.judul||'Draf Riset AI'}" readonly /></div>
+            <button id="btn-regen" class="btn btn-ai" style="width:100%;margin-top:16px;">🔄 Regenerate AI</button>
+          </div>
+          <div class="workspace-pane-right">
+            <div class="workspace-canvas-toolbar">
+              <div class="canvas-toolbar-group"><span id="metric-words" class="canvas-metric-item">0 kata</span></div>
+              <div class="canvas-toolbar-group">
+                <button id="btn-exp-md" class="btn btn-secondary btn-sm">Markdown</button>
+                <button id="btn-exp-docx" class="btn btn-secondary btn-sm">Word (.docx)</button>
+                <button id="btn-exp-print" class="btn btn-secondary btn-sm">PDF/Print</button>
+              </div>
+            </div>
+            <div id="paper-host" class="doc-paper theme-paper-light"><p>Menyiapkan dokumen...</p></div>
+          </div>
+        </div>`;
+
+        document.getElementById('btn-regen').onclick = onRegenerate;
+        document.getElementById('btn-exp-md').onclick = () => ExportEngine.exportToMarkdown(this.rawMarkdownCache, formData?.judul);
+        document.getElementById('btn-exp-docx').onclick = () => ExportEngine.exportToDocx(document.getElementById('paper-host').innerHTML, formData?.judul);
+        document.getElementById('btn-exp-print').onclick = () => ExportEngine.exportToPdfOrPrint();
+      }
+
+      updateWorkspaceContent(mdText) {
+        this.rawMarkdownCache = mdText;
+        const host = document.getElementById('paper-host');
+        if (!host) return;
+
+        let html = mdText.replace(/^### (.*$)/gim, '<h3>$1</h3>')
+          .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+          .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/^\> (.*$)/gim, '<div class="doc-paper-callout">$1</div>');
+
+        const paragraphs = html.split(/\n\n+/);
+        host.innerHTML = paragraphs.map(p => p.startsWith('<h') || p.startsWith('<div') ? p : `<p>${p}</p>`).join('');
+
+        const words = mdText.trim() ? mdText.trim().split(/\s+/).length : 0;
+        const mw = document.getElementById('metric-words');
+        if (mw) mw.textContent = `${words} kata`;
+      }
+    }
+
+    class App {
+      static init() {
+        this.ui = new UIManager();
+        this.currentProject = null;
+        this.lastWizardData = null;
+
+        // Route dispatcher
+        window.onhashchange = () => this.handleRoute();
+        this.bindGlobalEvents();
+        this.handleRoute();
+      }
+
+      static bindGlobalEvents() {
+        document.getElementById('sidebar-toggle-btn').onclick = () => {
+          document.getElementById('app-sidebar').classList.toggle('collapsed');
+        };
+
+        document.getElementById('btn-open-settings').onclick = () => this.openSettings();
+
+        window.appOpenProj = (id) => {
+          const p = StorageEngine.getProjectById(id);
+          if (p) {
+            this.currentProject = p;
+            this.lastWizardData = p.formData;
+            window.location.hash = '#/workspace';
+          }
+        };
+
+        window.appDelProj = (id) => {
+          StorageEngine.deleteProject(id);
+          this.ui.showToast('Proyek dihapus.', 'info');
+          this.ui.renderProjectsView({});
+        };
+
+        window.appToggleFav = (id) => {
+          StorageEngine.toggleFavorite(id);
+          this.ui.renderProjectsView({});
+        };
+
+        window.appWsTab = (tab) => {
+          const ws = document.getElementById('ws-layout');
+          if (!ws) return;
+          if (tab === 'left') { ws.classList.add('show-tab-left'); ws.classList.remove('show-tab-right'); }
+          else { ws.classList.add('show-tab-right'); ws.classList.remove('show-tab-left'); }
+        };
+      }
+
+      static openSettings() {
+        const settings = StorageEngine.getSettings();
+        this.ui.showModal({
+          title: '⚙️ Pengaturan Aplikasi',
+          bodyHtml: `
+            <div class="form-group">
+              <label class="form-label">Google Gemini API Key *</label>
+              <input type="password" id="cfg-key" class="form-control" value="${settings.apiKey || ''}" placeholder="AIzaSy..." />
+              <p style="font-size:0.75rem;color:#94A3B8;margin-top:4px;">🔒 Key disimpan privat di LocalStorage browser Anda.</p>
+            </div>
+            <div class="form-group" style="margin-top: 14px;">
+              <label class="form-label">Model Gemini Utama</label>
+              <select id="cfg-model" class="form-select">
+                <option value="gemini-2.5-flash" ${settings.selectedModel === 'gemini-2.5-flash' ? 'selected' : ''}>gemini-2.5-flash (Terbaru & Cepat - Rekomendasi)</option>
+                <option value="gemini-2.5-pro" ${settings.selectedModel === 'gemini-2.5-pro' ? 'selected' : ''}>gemini-2.5-pro (Riset Mendalam Terbaru)</option>
+                <option value="gemini-2.0-flash" ${settings.selectedModel === 'gemini-2.0-flash' ? 'selected' : ''}>gemini-2.0-flash (Flash v2.0)</option>
+                <option value="gemini-1.5-flash" ${settings.selectedModel === 'gemini-1.5-flash' ? 'selected' : ''}>gemini-1.5-flash (Flash v1.5)</option>
+                <option value="gemini-1.5-pro" ${settings.selectedModel === 'gemini-1.5-pro' ? 'selected' : ''}>gemini-1.5-pro (Pro v1.5)</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:16px;">
+              <button id="btn-export-bk" class="btn btn-secondary btn-sm">💾 Backup JSON</button>
+            </div>
+          `,
+          footerButtons: [
+            {
+              label: 'Uji Koneksi',
+              variant: 'secondary',
+              onClick: async () => {
+                const k = document.getElementById('cfg-key').value;
+                const res = await GeminiService.testApiKey(k);
+                this.ui.showToast(res.message, res.success ? 'success' : 'danger');
+              }
+            },
+            {
+              label: 'Simpan',
+              variant: 'primary',
+              onClick: () => {
+                const k = document.getElementById('cfg-key').value;
+                const m = document.getElementById('cfg-model').value;
+                StorageEngine.saveSettings({ apiKey: k, selectedModel: m });
+                this.ui.showToast('Pengaturan disimpan!', 'success');
+                this.ui.closeModal();
+                this.checkApiStatus();
+              }
+            }
+          ]
+        });
+
+        setTimeout(() => {
+          const eb = document.getElementById('btn-export-bk');
+          if (eb) eb.onclick = () => StorageEngine.exportBackupJSON();
+        }, 100);
+      }
+
+      static checkApiStatus() {
+        const k = GeminiService.getApiKey();
+        const badge = document.getElementById('api-status-badge');
+        const txt = document.getElementById('api-status-text');
+        if (k) {
+          badge.className = 'status-pill status-success';
+          txt.textContent = 'API Key Set';
+        } else {
+          badge.className = 'status-pill status-warning';
+          txt.textContent = 'API Key Belum Set';
+        }
+      }
+
+      static handleRoute() {
+        const hash = window.location.hash || '#/home';
+        this.checkApiStatus();
+
+        if (hash.startsWith('#/home')) {
+          this.ui.renderHomeView((modKey) => {
+            window.location.hash = `#/wizard?module=${modKey}`;
+          });
+        } else if (hash.startsWith('#/wizard')) {
+          const modKey = new URLSearchParams(hash.split('?')[1]||'').get('module') || 'PROPOSAL';
+          this.ui.renderWizardView(modKey, (formData) => {
+            this.lastWizardData = formData;
+            this.currentProject = StorageEngine.saveProject({
+              title: formData.judul || 'Draf Riset AI',
+              moduleKey: formData.moduleKey,
+              formData,
+              content: ''
+            });
+            window.location.hash = '#/workspace';
+          });
+        } else if (hash.startsWith('#/projects')) {
+          this.ui.renderProjectsView({});
+        } else if (hash.startsWith('#/workspace')) {
+          this.ui.renderWorkspaceView(this.lastWizardData, () => this.generateDoc());
+          if (this.currentProject && this.currentProject.content) {
+            this.ui.updateWorkspaceContent(this.currentProject.content);
+          } else if (this.lastWizardData) {
+            this.generateDoc();
+          }
+        }
+      }
+
+      static async generateDoc() {
+        if (!this.lastWizardData) return;
+        const prompt = buildAcademicPrompt(this.lastWizardData.moduleKey, this.lastWizardData);
+
+        try {
+          this.ui.showToast('Menghubungkan ke Gemini API...', 'info');
+          const fullText = await GeminiService.generateStream(
+            prompt,
+            (chunk, acc) => this.ui.updateWorkspaceContent(acc)
+          );
+
+          if (this.currentProject) {
+            this.currentProject.content = fullText;
+            StorageEngine.saveProject(this.currentProject);
+          }
+          this.ui.showToast('Dokumen selesai dihasilkan & tersimpan!', 'success');
+        } catch (err) {
+          this.ui.showToast(err.message, 'danger');
+          if (err.message.includes('API_KEY')) setTimeout(() => this.openSettings(), 1000);
+        }
+      }
+    }
+
+    // Bootstrapping App on DOM Ready
+    document.addEventListener('DOMContentLoaded', () => App.init());
+  </script>
+</body>
+</html>
